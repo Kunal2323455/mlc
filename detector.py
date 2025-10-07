@@ -17,7 +17,7 @@ class TulsiDiseaseDetector:
                 self.img_height = self.config['img_height']
                 self.img_width = self.config['img_width']
         else:
-            # Fallback defaults
+            # Fallback defaults (alphabetically sorted to match training)
             self.class_names = ['bacterial', 'fungal', 'healthy', 'pests']
             self.img_height = 224
             self.img_width = 224
@@ -58,24 +58,34 @@ class TulsiDiseaseDetector:
             'healthy': "✅ Plant appears healthy! Continue regular care and monitoring.",
             'bacterial': (
                 "🦠 BACTERIAL INFECTION detected.\n"
-                "• Apply copper-based bactericide\n"
-                "• Improve air circulation\n"
-                "• Avoid overhead watering\n"
-                "• Remove infected leaves"
+                "Treatment Recommendations:\n"
+                "• Apply copper-based bactericide (Copper sulfate solution)\n"
+                "• Improve air circulation around plants\n"
+                "• Avoid overhead watering - water at base\n"
+                "• Remove and destroy infected leaves\n"
+                "• Maintain proper plant spacing\n"
+                "• Sterilize pruning tools between cuts"
             ),
             'fungal': (
                 "🍄 FUNGAL INFECTION detected.\n"
-                "• Apply fungicide spray\n"
-                "• Reduce humidity around plant\n"
-                "• Ensure good drainage\n"
-                "• Remove affected parts"
+                "Treatment Recommendations:\n"
+                "• Apply organic fungicide (neem oil or sulfur-based)\n"
+                "• Reduce humidity and improve air flow\n"
+                "• Ensure good soil drainage\n"
+                "• Remove affected leaves and stems\n"
+                "• Avoid wetting foliage during watering\n"
+                "• Apply fungicide every 7-10 days until clear"
             ),
             'pests': (
                 "🐛 PEST INFESTATION detected.\n"
-                "• Apply neem oil or insecticidal soap\n"
-                "• Check for insects regularly\n"
-                "• Use yellow sticky traps\n"
-                "• Quarantine if necessary"
+                "Treatment Recommendations:\n"
+                "• Apply neem oil spray (diluted 2%)\n"
+                "• Use insecticidal soap for soft-bodied insects\n"
+                "• Install yellow sticky traps\n"
+                "• Check undersides of leaves regularly\n"
+                "• Introduce beneficial insects (ladybugs)\n"
+                "• Quarantine affected plants if severe\n"
+                "• Remove heavily infested leaves"
             ),
         }
 
@@ -83,5 +93,3 @@ class TulsiDiseaseDetector:
         if confidence < 0.6:
             base += f"\n\n⚠️ Note: Prediction confidence is {confidence*100:.1f}%. Consider consulting an expert for confirmation."
         return base
-
-
