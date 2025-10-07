@@ -87,10 +87,17 @@ if len(classes) == 1:
         dataset_root = inner_dir
         classes = inner_classes
 
-if len(classes) < 2:
-    raise RuntimeError(f"❌ Found {len(classes)} class folders. Expected >= 2.")
+if len(classeprint("📂 Disease Classes Found:", classes)
+print("📊 Expected classes: ['bacterial', 'fungal', 'healthy', 'pests']")
 
-print("📂 Disease Classes Found:", classes)
+# Fix class naming inconsistency (fungi -> fungal)
+if 'fungi' in classes:
+    old_path = os.path.join(dataset_root, 'fungi')
+    new_path = os.path.join(dataset_root, 'fungal')
+    if not os.path.exists(new_path):
+        os.rename(old_path, new_path)
+        print("✅ Renamed 'fungi' folder to 'fungal' for consistency")
+    classes = [cls if cls != 'fungi' else 'fungal' for cls in classes]s Found:", classes)
 print("📊 Expected classes: ['bacterial', 'fungi', 'healthy', 'pests']")
 
 # Count images before split
