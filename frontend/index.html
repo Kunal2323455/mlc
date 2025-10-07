@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tulsi Disease Detection - AI-Powered Plant Health Analysis</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='48' x='8' font-size='48'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <meta name="description" content="AI-powered tulsi plant disease detection with multiple deep learning models">
+</head>
+<body>
+    <!-- Decorative Elements -->
+    <div class="decor decor-1"></div>
+    <div class="decor decor-2"></div>
+    <div class="decor decor-3"></div>
+    
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="topbar" aria-label="Top Navigation">
+            <div class="brand">
+                <span class="logo">🌿</span>
+                <span class="title">Tulsi AI</span>
+                <span class="subtitle">Plant Health Diagnostics</span>
+            </div>
+            <div class="actions">
+                <button id="themeToggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+                <button id="infoBtn" class="icon-btn" aria-label="Information" title="About">ℹ️</button>
+                <a class="icon-btn" href="/" aria-label="Refresh" title="Refresh">⟲</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1>Advanced Tulsi Leaf Health Diagnostics</h1>
+            <p>Upload a leaf photo and get professional-grade AI diagnosis using state-of-the-art deep learning models with confidence scoring and treatment guidance.</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">AI Models</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">95%+</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">4</span>
+                    <span class="stat-label">Disease Types</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Model Selection Section -->
+            <section class="model-section">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>🧠 Choose AI Model</h2>
+                        <span id="modelStatus" class="status-badge loading">Loading...</span>
+                    </div>
+                    <div class="model-selector">
+                        <select id="modelSelect" aria-label="Select AI model for analysis">
+                            <option value="">Loading available models...</option>
+                        </select>
+                        <div id="modelInfo" class="model-info hidden">
+                            <div class="model-details">
+                                <span id="modelAccuracy" class="accuracy-badge"></span>
+                                <span id="modelDescription" class="model-desc"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-grid" id="modelGrid">
+                        <!-- Model cards will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Image Upload Section -->
+            <section class="uploader">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>📷 Upload Leaf Image</h2>
+                        <span class="hint">JPG, PNG, JPEG — Max 10 MB</span>
+                    </div>
+                    <div id="dropzone" class="dropzone" tabindex="0" aria-label="Image dropzone">
+                        <input id="fileInput" type="file" accept="image/*" hidden />
+                        <img id="preview" alt="Preview" class="preview hidden" />
+                        <div class="placeholder">
+                            <div class="camera">
+                                <span class="shine"></span>
+                                <span class="glyph">📷</span>
+                            </div>
+                            <p>Drag & drop your leaf image, or <button id="browseBtn" class="link" aria-label="Browse files">browse</button></p>
+                            <div class="upload-tips">
+                                <h4>📋 Tips for Best Results:</h4>
+                                <ul>
+                                    <li>Use clear, well-lit photos</li>
+                                    <li>Focus on the leaf surface</li>
+                                    <li>Avoid blurry or dark images</li>
+                                    <li>Include the entire leaf if possible</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button id="predictBtn" class="primary" disabled>
+                            <span class="btn-icon">🔍</span>
+                            Analyze with AI
+                        </button>
+                        <button id="clearBtn" class="ghost" disabled>
+                            <span class="btn-icon">🗑️</span>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultSection" class="results hidden" aria-live="polite">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>🔬 Analysis Results</h2>
+                        <div class="result-badges">
+                            <span id="confidencePill" class="pill hidden"></span>
+                            <span id="modelUsedBadge" class="model-badge hidden"></span>
+                        </div>
+                    </div>
+                    
+                    <div id="summary" class="summary"></div>
+                    
+                    <div class="result-grid">
+                        <!-- Diagnosis Card -->
+                        <div class="result-card">
+                            <h3>🏥 Diagnosis</h3>
+                            <div id="diagnosisDetails" class="diagnosis-details">
+                                <div id="primaryDiagnosis" class="primary-diagnosis"></div>
+                                <div id="confidenceBar" class="confidence-bar">
+                                    <div class="confidence-fill"></div>
+                                    <span class="confidence-text"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Probabilities Card -->
+                        <div class="result-card">
+                            <h3>📊 Class Probabilities</h3>
+                            <div id="probs" class="probs"></div>
+                        </div>
+
+                        <!-- Treatment Card -->
+                        <div class="result-card treatment-card">
+                            <h3>💊 Treatment Recommendation</h3>
+                            <pre id="recommendation" class="recommendation" title="Click to copy"></pre>
+                            <button id="copyBtn" class="copy-btn" title="Copy to clipboard">📋 Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- Additional Analysis -->
+                    <div class="analysis-extras">
+                        <div class="analysis-item">
+                            <h4>🎯 Prediction Confidence</h4>
+                            <div id="confidenceAnalysis" class="confidence-analysis"></div>
+                        </div>
+                        <div class="analysis-item">
+                            <h4>⚡ Model Performance</h4>
+                            <div id="modelPerformance" class="model-performance"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Disease Information Section -->
+            <section class="disease-info">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>🌿 Disease Information</h2>
+                    </div>
+                    <div class="disease-grid">
+                        <div class="disease-card bacterial">
+                            <div class="disease-icon">🦠</div>
+                            <h3>Bacterial Infection</h3>
+                            <p>Caused by bacterial pathogens affecting leaf tissue, leading to spots, wilting, and discoloration.</p>
+                            <div class="symptoms">
+                                <strong>Symptoms:</strong> Water-soaked spots, yellowing, leaf drop
+                            </div>
+                        </div>
+                        <div class="disease-card fungal">
+                            <div class="disease-icon">🍄</div>
+                            <h3>Fungal Infection</h3>
+                            <p>Fungal diseases causing various leaf symptoms including spots, mildew, and tissue damage.</p>
+                            <div class="symptoms">
+                                <strong>Symptoms:</strong> Powdery coating, dark spots, leaf curling
+                            </div>
+                        </div>
+                        <div class="disease-card pests">
+                            <div class="disease-icon">🐛</div>
+                            <h3>Pest Infestation</h3>
+                            <p>Insect damage causing holes, discoloration, and structural damage to leaves.</p>
+                            <div class="symptoms">
+                                <strong>Symptoms:</strong> Holes, chewed edges, insect presence
+                            </div>
+                        </div>
+                        <div class="disease-card healthy">
+                            <div class="disease-icon">✅</div>
+                            <h3>Healthy Plant</h3>
+                            <p>Normal, healthy tulsi leaf showing no signs of disease or pest damage.</p>
+                            <div class="symptoms">
+                                <strong>Characteristics:</strong> Green color, intact structure, no spots
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>🤖 AI Models</h4>
+                    <p>Powered by TensorFlow, EfficientNet, ResNet, VGG16, MobileNet, and Custom CNN architectures</p>
+                </div>
+                <div class="footer-section">
+                    <h4>🔬 Technology</h4>
+                    <p>FastAPI backend with ensemble learning and advanced image preprocessing</p>
+                </div>
+                <div class="footer-section">
+                    <h4>📊 Accuracy</h4>
+                    <p>95%+ accuracy with confidence scoring and treatment recommendations</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2024 Tulsi AI - Advanced Plant Disease Detection System</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading hidden" aria-hidden="true">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing image with AI...</div>
+            <div class="loading-subtext">This may take a few moments</div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toasts" class="toasts" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🌿 About Tulsi AI</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>🧠 AI Models Available:</h3>
+                <ul>
+                    <li><strong>Custom CNN:</strong> Deep convolutional network designed specifically for plant diseases</li>
+                    <li><strong>EfficientNet:</strong> State-of-the-art efficient neural network architecture</li>
+                    <li><strong>ResNet50:</strong> Deep residual network with skip connections</li>
+                    <li><strong>VGG16:</strong> Classic deep learning architecture with transfer learning</li>
+                    <li><strong>MobileNet:</strong> Lightweight model optimized for mobile deployment</li>
+                    <li><strong>Ensemble:</strong> Combines multiple models for maximum accuracy</li>
+                </ul>
+                
+                <h3>🎯 How It Works:</h3>
+                <ol>
+                    <li>Upload a clear image of a tulsi leaf</li>
+                    <li>Select an AI model for analysis</li>
+                    <li>Get instant diagnosis with confidence scoring</li>
+                    <li>Receive treatment recommendations</li>
+                </ol>
+                
+                <h3>📊 Accuracy Information:</h3>
+                <p>Our models achieve 95%+ accuracy on test datasets with comprehensive validation across thousands of leaf images.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/app.js"></script>
+    <script>
+        window.API_BASE = '';
+    </script>
+</body>
+</html>
