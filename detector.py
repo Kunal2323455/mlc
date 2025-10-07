@@ -17,7 +17,7 @@ class TulsiDiseaseDetector:
                 self.img_height = self.config['img_height']
                 self.img_width = self.config['img_width']
         else:
-            # Fallback defaults
+            # Fallback defaults - handle both fungal and fungi naming
             self.class_names = ['bacterial', 'fungal', 'healthy', 'pests']
             self.img_height = 224
             self.img_width = 224
@@ -47,7 +47,7 @@ class TulsiDiseaseDetector:
             'confidence_percentage': f"{confidence*100:.1f}%",
             'all_class_probabilities': all_predictions,
             'is_healthy': predicted_class.lower() == 'healthy',
-            'needs_treatment': predicted_class.lower() in ['bacterial', 'fungal', 'pests']
+            'needs_treatment': predicted_class.lower() in ['bacterial', 'fungal', 'fungi', 'pests']
         }
 
     def get_treatment_recommendation(self, prediction_result):
@@ -70,6 +70,13 @@ class TulsiDiseaseDetector:
                 "• Ensure good drainage\n"
                 "• Remove affected parts"
             ),
+            'fungi': (
+                "🍄 FUNGAL INFECTION detected.\n"
+                "• Apply fungicide spray\n"
+                "• Reduce humidity around plant\n"
+                "• Ensure good drainage\n"
+                "• Remove affected parts"
+            ),
             'pests': (
                 "🐛 PEST INFESTATION detected.\n"
                 "• Apply neem oil or insecticidal soap\n"
@@ -83,5 +90,3 @@ class TulsiDiseaseDetector:
         if confidence < 0.6:
             base += f"\n\n⚠️ Note: Prediction confidence is {confidence*100:.1f}%. Consider consulting an expert for confirmation."
         return base
-
-

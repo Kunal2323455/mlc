@@ -1,29 +1,20 @@
-# api.py
+# api.py - Tulsi Disease Detection API
 
 import os
 import io
 import uvicorn
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException # Added Form
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from tensorflow.keras.models import load_model
 from detector import TulsiDiseaseDetector
 
 APP_STATIC_DIR = os.path.join(os.path.dirname(__file__), "frontend")
 
-# --- CHANGED: Dictionary to hold all models ---
-# NOTE: I've renamed 'tulsi_disease_detection_best_model.h5' to the more descriptive name
-# from your file list. Make sure your file is named 'best_VGG16_Transfer_model.h5'.
-MODEL_FILES = {
-    "vgg16": "best_VGG16_Transfer_model.h5",
-    "mobilenet": "best_MobileNet_Transfer_model.h5",
-    "custom_cnn": "best_Custom_CNN_model.h5",
-}
-
-# --- CHANGED: This will hold multiple detector instances ---
-detectors = {}
+# Single model configuration
+MODEL_FILE = "tulsi_disease_detection_best_model.h5"
+detector = None
 config_path = ""
 
 app = FastAPI(title="Tulsi Disease Detection API", version="1.0.0")
@@ -43,43 +34,31 @@ def _ensure_model_files_exist():
     if not os.path.exists(config_path):
         raise FileNotFoundError("model_config.json not found in project root")
 
-    # --- CHANGED: Check for all model files ---
-    for model_key, model_file in MODEL_FILES.items():
-        model_path = os.path.join(os.path.dirname(__file__), model_file)
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"{model_file} not found for model '{model_key}'")
+    model_path = os.path.join(os.path.dirname(__file__), MODEL_FILE)
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"{MODEL_FILE} not found")
 
 
 @app.on_event("startup")
-def load_detectors_on_startup():
-    # --- CHANGED: Load all models into the 'detectors' dictionary ---
-    global detectors
+def load_detector_on_startup():
+    global detector
     _ensure_model_files_exist()
-    print("Loading models...")
-    for model_key, model_file in MODEL_FILES.items():
-        model_path = os.path.join(os.path.dirname(__file__), model_file)
-        print(f" -> Loading '{model_key}' from {model_file}")
-        detectors[model_key] = TulsiDiseaseDetector(model_path, config_path)
-    print("All models loaded successfully!")
-
-
-# --- NEW: Endpoint to list available models ---
-@app.get("/models")
-def get_models():
-    # Returns a list of model keys for the frontend dropdown
-    return {"models": list(detectors.keys())}
+    print("Loading model...")
+    model_path = os.path.join(os.path.dirname(__file__), MODEL_FILE)
+    print(f" -> Loading model from {MODEL_FILE}")
+    detector = TulsiDiseaseDetector(model_path, config_path)
+    print("Model loaded successfully!")
 
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "model_loaded": detector is not None}
 
 
-# --- CHANGED: The predict function now accepts a model name ---
 @app.post("/predict")
-async def predict(file: UploadFile = File(...), model_name: str = Form(...)):
-    if model_name not in detectors:
-        raise HTTPException(status_code=404, detail=f"Model '{model_name}' not found.")
+async def predict(file: UploadFile = File(...)):
+    if detector is None:
+        raise HTTPException(status_code=500, detail="Model not loaded")
 
     if file.content_type is None or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Please upload an image file")
@@ -95,21 +74,38 @@ async def predict(file: UploadFile = File(...), model_name: str = Form(...)):
         with open(temp_path, "wb") as f:
             f.write(contents)
         
-        # --- CHANGED: Use the selected detector ---
-        selected_detector = detectors[model_name]
-        result = selected_detector.predict(temp_path)
-        recommendation = selected_detector.get_treatment_recommendation(result)
+        # Make prediction
+        result = detector.predict(temp_path)
+        recommendation = detector.get_treatment_recommendation(result)
 
         response = {
             "prediction": result,
             "recommendation": recommendation,
-            "model_used": model_name, # Also return which model was used
+            "model_used": "Tulsi Disease Detection CNN"
         }
+        
+        # Clean up temp file
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+            
         return JSONResponse(content=response)
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/model-info")
+def get_model_info():
+    if detector is None:
+        raise HTTPException(status_code=500, detail="Model not loaded")
+    
+    return {
+        "model_name": "Tulsi Disease Detection CNN",
+        "classes": detector.class_names,
+        "input_size": f"{detector.img_height}x{detector.img_width}",
+        "description": "Deep learning model for detecting diseases in Tulsi plants"
+    }
 
 
 if os.path.isdir(APP_STATIC_DIR):

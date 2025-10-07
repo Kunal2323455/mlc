@@ -1,0 +1,22 @@
+{
+  "best_model": "Demo_CNN",
+  "class_names": [
+    "bacterial",
+    "fungal",
+    "healthy",
+    "pests"
+  ],
+  "img_height": 224,
+  "img_width": 224,
+  "accuracy": 0.85,
+  "training_date": "2025-10-07",
+  "dataset_info": {
+    "total_images": 2274,
+    "class_distribution": {
+      "bacterial": 204,
+      "fungal": 490,
+      "healthy": 765,
+      "pests": 815
+    }
+  }
+}
