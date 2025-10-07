@@ -1,0 +1,17 @@
+{
+  "best_model": "MobileNetV2_Transfer",
+  "class_names": [
+    "bacterial",
+    "fungal",
+    "healthy",
+    "pests"
+  ],
+  "img_height": 224,
+  "img_width": 224,
+  "test_accuracy": 0.9766763848396501,
+  "test_precision": 0.9775561739847454,
+  "test_recall": 0.9766763848396501,
+  "test_f1_score": 0.9766914781608476,
+  "total_classes": 4,
+  "total_parameters": 2620356
+}
